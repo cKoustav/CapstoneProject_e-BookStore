@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBookStore | Online Books, Fast Delivery & Mock Checkout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand" onclick="navigateTo('catalog')">
+                <span class="brand-icon">📚</span>
+                <div class="brand-text">
+                    <span class="brand-title">eBookStore</span>
+                    <span class="brand-tagline">Read. Learn. Grow.</span>
+                </div>
+            </div>
+
+            <div class="search-bar-nav">
+                <input type="text" id="global-search-input" placeholder="Search by title, author, category..." oninput="handleGlobalSearch(event)" />
+                <button class="search-btn" onclick="executeSearch()">🔍</button>
+            </div>
+
+            <nav class="nav-links">
+                <a href="javascript:void(0)" class="nav-link active" id="nav-catalog" onclick="navigateTo('catalog')">Catalog</a>
+                <a href="javascript:void(0)" class="nav-link" id="nav-orders" onclick="navigateTo('orders')" style="display: none;">My Orders</a>
+                <a href="javascript:void(0)" class="nav-link cart-link" id="nav-cart" onclick="openCartModal()">
+                    🛒 Cart <span id="cart-badge" class="badge">0</span>
+                </a>
+                
+                <!-- Guest Actions -->
+                <div id="auth-guest-controls" class="auth-controls">
+                    <button class="btn btn-outline-primary" onclick="openAuthModal('login')">Sign In</button>
+                    <button class="btn btn-primary" onclick="openAuthModal('register')">Register</button>
+                </div>
+
+                <!-- Logged In User Actions -->
+                <div id="auth-user-controls" class="auth-controls" style="display: none;">
+                    <div class="user-greeting">
+                        <span class="user-avatar" id="nav-user-avatar">U</span>
+                        <div class="user-details-mini">
+                            <span class="user-name" id="nav-user-name">User</span>
+                            <span class="user-email" id="nav-user-email">user@example.com</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Hero Banner -->
+        <section class="hero-section" id="hero-banner">
+            <div class="hero-content">
+                <span class="hero-chip">✨ New Arrivals & Best Sellers</span>
+                <h1 class="hero-heading">Explore Stories & Expand Your Mind</h1>
+                <p class="hero-subtext">Order physical and digital copies effortlessly. Fast shipping, secure mock gateway & hassle-free 48-hour order cancellations.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg" onclick="scrollToBooks()">Browse Books</button>
+                    <button class="btn btn-outline-light btn-lg" onclick="openSpecialOffer()">Why eBookStore?</button>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-num">48h</span>
+                    <span class="stat-label">Hassle-free Cancellation</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num">100%</span>
+                    <span class="stat-label">File-based Local DB</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num">Zero</span>
+                    <span class="stat-label">Database Dependencies</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 1: Catalog View -->
+        <section id="view-catalog" class="view-section active">
+            <div class="catalog-controls">
+                <div class="category-pills" id="category-pills">
+                    <button class="pill active" onclick="filterByCategory('all', this)">All Categories</button>
+                    <!-- Injected dynamically -->
+                </div>
+                <div class="catalog-meta">
+                    <span id="catalog-count-label">Showing all books</span>
+                </div>
+            </div>
+
+            <!-- Books Grid -->
+            <div id="books-grid" class="books-grid">
+                <!-- Book Cards will be rendered here dynamically -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading book catalog...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 2: Orders View -->
+        <section id="view-orders" class="view-section" style="display: none;">
+            <div class="section-header">
+                <div>
+                    <h2>My Orders & Purchase History</h2>
+                    <p class="text-muted">Review your orders, track status, or cancel within the <strong>48-hour cancellation policy</strong>.</p>
+                </div>
+                <button class="btn btn-outline-primary" onclick="loadMyOrders()">🔄 Refresh Orders</button>
+            </div>
+
+            <div class="cancellation-policy-banner">
+                <span class="policy-icon">⏱️</span>
+                <div class="policy-text">
+                    <strong>48-Hour Cancellation Guarantee:</strong> You can cancel any confirmed or processing order within 48 hours of placing it. Full refund is immediately processed to your original payment method.
+                </div>
+            </div>
+
+            <div id="orders-list-container" class="orders-container">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal 1: Auth Modal (Login & Register) -->
+    <div id="modal-auth" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab-btn active" onclick="switchAuthTab('login')">Sign In</button>
+                <button id="tab-register" class="tab-btn" onclick="switchAuthTab('register')">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" class="auth-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label>Username or Email Address</label>
+                    <input type="text" id="login-identifier" class="form-input" placeholder="e.g. johndoe or john@example.com" required autocomplete="username" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password" />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">Sign In</button>
+                <p class="auth-footer-text">Don't have an account? <a href="javascript:void(0)" onclick="switchAuthTab('register')">Register here</a></p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-register" class="auth-form" onsubmit="handleRegisterSubmit(event)" style="display: none;">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-fullname" class="form-input" placeholder="e.g. John Doe" required />
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="reg-username" class="form-input" placeholder="e.g. johndoe" minlength="3" required />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="e.g. john@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (Optional)</label>
+                    <input type="tel" id="reg-phone" class="form-input" placeholder="e.g. +1 555-0199" />
+                </div>
+                <div class="form-group">
+                    <label>Password (min 6 characters)</label>
+                    <input type="password" id="reg-password" class="form-input" placeholder="Create a secure password" minlength="6" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="btn-reg-submit">Create Account</button>
+                <p class="auth-footer-text">Already registered? <a href="javascript:void(0)" onclick="switchAuthTab('login')">Sign In</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Cart & Checkout Modal -->
+    <div id="modal-cart" class="modal-backdrop" style="display: none;">
+        <div class="modal-card modal-large">
+            <button class="modal-close-btn" onclick="closeCartModal()">✕</button>
+            <div class="modal-header">
+                <h2>🛒 Shopping Cart & Checkout</h2>
+            </div>
+
+            <div class="cart-layout">
+                <!-- Cart Items Section -->
+                <div class="cart-items-column">
+                    <h3>Items in Cart (<span id="cart-items-count">0</span>)</h3>
+                    <div id="cart-items-list" class="cart-items-list">
+                        <!-- Injected via JS -->
+                    </div>
+                    <div class="cart-summary-box">
+                        <div class="summary-line">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal-val">$0.00</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Shipping & Handling:</span>
+                            <span class="text-success">FREE</span>
+                        </div>
+                        <div class="summary-line total-line">
+                            <span>Total Payable:</span>
+                            <span id="cart-total-val">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Form Section -->
+                <div class="checkout-form-column" id="checkout-form-container">
+                    <h3>Delivery Address & Mock Payment</h3>
+                    
+                    <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+                        <!-- Address -->
+                        <h4 class="form-subheading">📍 Delivery Address</h4>
+                        <div class="form-group">
+                            <label>Street Address</label>
+                            <input type="text" id="addr-street" class="form-input" placeholder="123 Main St, Apt 4B" required />
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="addr-city" class="form-input" placeholder="San Francisco" required />
+                            </div>
+                            <div class="form-group">
+                                <label>State / Province</label>
+                                <input type="text" id="addr-state" class="form-input" placeholder="CA" required />
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label>Postal / Zip Code</label>
+                                <input type="text" id="addr-zip" class="form-input" placeholder="94107" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Country</label>
+                                <input type="text" id="addr-country" class="form-input" placeholder="United States" required />
+                            </div>
+                        </div>
+
+                        <!-- Mock Payment Gateway -->
+                        <h4 class="form-subheading mt-3">💳 Mock Payment Gateway</h4>
+                        <div class="payment-method-selector">
+                            <label class="radio-card active" onclick="selectPaymentMethod('CARD', this)">
+                                <input type="radio" name="pay_method" value="CARD" checked />
+                                <span>Credit / Debit Card</span>
+                            </label>
+                            <label class="radio-card" onclick="selectPaymentMethod('UPI', this)">
+                                <input type="radio" name="pay_method" value="UPI" />
+                                <span>UPI / Instant Pay</span>
+                            </label>
+                            <label class="radio-card" onclick="selectPaymentMethod('NET_BANKING', this)">
+                                <input type="radio" name="pay_method" value="NET_BANKING" />
+                                <span>Net Banking</span>
+                            </label>
+                        </div>
+
+                        <div id="card-payment-fields">
+                            <div class="form-group">
+                                <label>Cardholder Name</label>
+                                <input type="text" id="card-holder" class="form-input" placeholder="JOHN DOE" />
+                            </div>
+                            <div class="form-group">
+                                <label>Card Number (16 digits)</label>
+                                <input type="text" id="card-number" class="form-input" placeholder="4111 2222 3333 4444" maxlength="19" />
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Expiry (MM/YY)</label>
+                                    <input type="text" id="card-expiry" class="form-input" placeholder="12/28" maxlength="5" />
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV / CVC</label>
+                                    <input type="password" id="card-cvv" class="form-input" placeholder="123" maxlength="4" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="upi-payment-fields" style="display: none;">
+                            <div class="form-group">
+                                <label>Virtual Payment Address (VPA / UPI ID)</label>
+                                <input type="text" id="upi-id" class="form-input" placeholder="username@okaxis or username@okhdfcbank" />
+                            </div>
+                        </div>
+
+                        <!-- Test Mock failure checkbox -->
+                        <div class="test-fail-box">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="simulate-fail-checkbox" />
+                                <span class="checkbox-label">Simulate Bank / Gateway Payment Failure (for testing)</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-block btn-lg" id="btn-place-order">
+                            Pay & Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Cancel Order Dialog -->
+    <div id="modal-cancel-order" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeCancelModal()">✕</button>
+            <div class="modal-header">
+                <h2>Cancel Order</h2>
+            </div>
+            <div class="cancel-modal-body">
+                <p>Are you sure you want to cancel order <strong id="cancel-modal-order-id">#ORD-XXXX</strong>?</p>
+                <p class="text-muted">Order cancellations are eligible within 48 hours of purchase. Refund will be credited to your original payment method.</p>
+                
+                <div class="form-group mt-3">
+                    <label>Cancellation Reason</label>
+                    <select id="cancel-reason-select" class="form-input">
+                        <option value="Ordered by mistake">Ordered by mistake</option>
+                        <option value="Found a better price elsewhere">Found a better price elsewhere</option>
+                        <option value="Delivery address entered incorrectly">Delivery address entered incorrectly</option>
+                        <option value="Item taking too long to arrive">Item taking too long to arrive</option>
+                        <option value="Other">Other reason</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions mt-4">
+                    <button class="btn btn-outline-light" onclick="closeCancelModal()">Keep Order</button>
+                    <button class="btn btn-danger" id="btn-confirm-cancel" onclick="confirmCancelOrder()">Confirm Cancellation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Book Details Modal -->
+    <div id="modal-book-detail" class="modal-backdrop" style="display: none;">
+        <div class="modal-card modal-large">
+            <button class="modal-close-btn" onclick="closeBookModal()">✕</button>
+            <div id="book-detail-body" class="book-detail-grid">
+                <!-- Dynamic insertion -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div class="nav-brand mb-2">
+                    <span class="brand-icon">📚</span>
+                    <span class="brand-title text-white">eBookStore</span>
+                </div>
+                <p class="text-muted">An end-to-end e-commerce bookstore solution powered by Spring Boot REST API & Pure File-based JSON Persistence.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Customer Service</h4>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="navigateTo('catalog')">Book Catalog</a></li>
+                    <li><a href="javascript:void(0)" onclick="navigateTo('orders')">Track & Cancel Orders</a></li>
+                    <li><a href="javascript:void(0)">48h Cancellation Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>System Architecture</h4>
+                <ul>
+                    <li>Backend: Java 17+ & Spring Boot 3</li>
+                    <li>Storage: File Repository (JSON IO)</li>
+                    <li>Security: SHA-256 Auth & Bearer Tokens</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 eBookStore Inc. All rights reserved. Built with Java Spring Boot REST API & File Storage.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
