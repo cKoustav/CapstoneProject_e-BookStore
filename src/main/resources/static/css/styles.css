@@ -29,6 +29,79 @@
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
+[data-theme="dark"] {
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: #1e3a5f;
+    --secondary: #94a3b8;
+    --success: #34d399;
+    --success-hover: #10b981;
+    --danger: #f87171;
+    --danger-hover: #ef4444;
+    --warning: #fbbf24;
+    --bg-main: #0f172a;
+    --bg-surface: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border-color: #334155;
+    --border-subtle: #27334a;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.55), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   Dark Theme Overrides — hardcoded (non-variable) colors
+   ========================================================================== */
+
+[data-theme="dark"] .btn-outline-danger:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .order-header {
+    background-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .cancellation-policy-banner {
+    background: linear-gradient(135deg, #1e3a5f, #1e293b);
+    border-color: #2c4a70;
+}
+
+[data-theme="dark"] .policy-text {
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .order-status-badge.status-confirmed {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .order-status-badge.status-processing {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .order-status-badge.status-shipped {
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+}
+
+[data-theme="dark"] .order-status-badge.status-delivered {
+    background-color: rgba(168, 85, 247, 0.15);
+    color: #d8b4fe;
+}
+
+[data-theme="dark"] .order-status-badge.status-cancelled {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+[data-theme="dark"] .test-fail-box {
+    background-color: rgba(245, 158, 11, 0.12);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -43,6 +116,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ==========================================================================
@@ -176,6 +250,31 @@ h1, h2, h3, h4 {
     top: 0;
     z-index: 100;
     box-shadow: var(--shadow-sm);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background-color: var(--border-subtle);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--border-color);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.92);
 }
 
 .nav-container {
@@ -737,7 +836,7 @@ h1, h2, h3, h4 {
 }
 
 .order-footer {
-    background-color: #fafafa;
+    background-color: var(--border-subtle);
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--border-color);
     display: flex;
@@ -812,7 +911,7 @@ h1, h2, h3, h4 {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
-    background: #f1f5f9;
+    background: var(--border-subtle);
     border: none;
     border-radius: 50%;
     width: 32px;
@@ -827,7 +926,7 @@ h1, h2, h3, h4 {
 }
 
 .modal-close-btn:hover {
-    background: #e2e8f0;
+    background: var(--border-color);
 }
 
 .modal-header {

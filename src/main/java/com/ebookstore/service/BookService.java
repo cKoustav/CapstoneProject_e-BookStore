@@ -34,7 +34,7 @@ public class BookService {
                     "Even bad code can function. But if code is not clean, it can bring a development organization to its knees. Learn the principles of clean craftsmanship.",
                     new BigDecimal("34.99"),
                     25,
-                    "https://images.unsplash.com/photo-1532012164546-f432f2e3edd1?w=400&auto=format&fit=crop&q=60"
+                    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&auto=format&fit=crop&q=60"
             ));
 
             books.add(new Book(

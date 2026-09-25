@@ -22,11 +22,33 @@ const state = {
 // Initialization
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
     initAuth();
     await loadCategories();
     await loadBooks();
     updateCartUI();
 });
+
+// ==========================================
+// Theme (Light / Dark Mode)
+// ==========================================
+function initTheme() {
+    updateThemeToggleIcon(document.documentElement.getAttribute('data-theme') || 'light');
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('ebookstore_theme', next);
+    updateThemeToggleIcon(next);
+}
+
+function updateThemeToggleIcon(theme) {
+    const btn = document.getElementById('theme-toggle-btn');
+    if (!btn) return;
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
 
 // ==========================================
 // Notification / Toast
